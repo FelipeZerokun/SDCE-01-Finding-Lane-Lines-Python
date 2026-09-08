@@ -1,0 +1,32 @@
+[project]
+name = "lane-finding"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "Felipe Rojas", email = "epilefrojasleon@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "moviepy>=2.2.1",
+    "numpy>=2.5.3",
+    "opencv-python-headless>=5.0.0.93",
+]
+
+[project.scripts]
+lane-finding = "lane_finding:main"
+
+[build-system]
+requires = ["uv_build>=0.12.0,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "mypy>=2.3.1",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.16.6",
+]
+notebook = [
+    "jupyterlab>=4.6.3",
+    "matplotlib>=3.11.1",
+]
