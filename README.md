@@ -10,6 +10,10 @@ A configurable computer-vision pipeline for detecting road lane lines in images 
 
 This repository began as the first project in Udacity's Self-Driving Car Engineer Nanodegree and has since been modernized into a typed, tested Python package with a command-line interface.
 
+## Related implementation
+
+A separate [C++17 and OpenCV implementation](https://github.com/FelipeZerokun/SDCE-01-Finding-Lane-Lines-CPP) is available for comparing the same lane-detection problem across both languages and their development ecosystems.
+
 ## Features
 
 - Detects left and right lane boundaries in RGB road images.
