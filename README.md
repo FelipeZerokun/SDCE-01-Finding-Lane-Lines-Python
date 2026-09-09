@@ -1,18 +1,16 @@
-# Lane Finding
+# Lane Finding — Python
 
 [![CI](https://github.com/FelipeZerokun/SDCE-01-Finding-Lane-Lines-Python/actions/workflows/ci.yml/badge.svg)](https://github.com/FelipeZerokun/SDCE-01-Finding-Lane-Lines-Python/actions/workflows/ci.yml)
 ![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-blue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A configurable computer-vision pipeline for detecting road lane lines in images and videos. The project uses OpenCV for image processing, MoviePy for video handling, and `uv` for reproducible Python environments and dependency management.
-
-![Detected lane lines](examples/laneLines_thirdPass.jpg)
+A configurable Python 3.12 computer-vision pipeline for detecting road lane lines in images and videos. The project uses OpenCV for image processing, MoviePy for video handling, and `uv` for reproducible environments and dependency management.
 
 This repository began as the first project in Udacity's Self-Driving Car Engineer Nanodegree and has since been modernized into a typed, tested Python package with a command-line interface.
 
 ## Related implementation
 
-A separate [C++17 and OpenCV implementation](https://github.com/FelipeZerokun/SDCE-01-Finding-Lane-Lines-CPP) is available for comparing the same lane-detection problem across both languages and their development ecosystems.
+For the companion implementation of the same lane-detection project, see the [C++17 and OpenCV version](https://github.com/FelipeZerokun/SDCE-01-Finding-Lane-Lines-CPP).
 
 ## Features
 
@@ -37,6 +35,10 @@ Each frame passes through the following stages:
 7. Fit a length-weighted line to each side of the lane.
 8. Smooth lane positions across recent video frames.
 9. Draw the detected lanes over the original frame.
+
+## Example output
+
+![Detected lane lines](examples/laneLines_thirdPass.jpg)
 
 ## Requirements
 
@@ -185,6 +187,10 @@ The detector is intended as an educational demonstration, not as a production ve
 ## Legacy project
 
 The original Udacity implementation remains available in [`P1.ipynb`](P1.ipynb), with its exported standalone script preserved under [`legacy/Project01_RojasFelipe.py`](legacy/Project01_RojasFelipe.py). These files are retained for historical comparison and are not used by the modern CLI.
+
+## Attribution
+
+This project is based on Udacity's [Finding Lane Lines project](https://github.com/udacity/CarND-LaneLines-P1) from the Self-Driving Car Engineer Nanodegree.
 
 ## License
 
