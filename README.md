@@ -1,56 +1,187 @@
-# **Finding Lane Lines on the Road** 
-[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
+# Lane Finding
 
-<img src="examples/laneLines_thirdPass.jpg" width="480" alt="Combined Image" />
+[![CI](https://github.com/FelipeZerokun/SDCE-01-Finding-Lane-Lines-Python/actions/workflows/ci.yml/badge.svg)](https://github.com/FelipeZerokun/SDCE-01-Finding-Lane-Lines-Python/actions/workflows/ci.yml)
+![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-blue)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Overview
----
+A configurable computer-vision pipeline for detecting road lane lines in images and videos. The project uses OpenCV for image processing, MoviePy for video handling, and `uv` for reproducible Python environments and dependency management.
 
-When we drive, we use our eyes to decide where to go.  The lines on the road that show us where the lanes are act as our constant reference for where to steer the vehicle.  Naturally, one of the first things we would like to do in developing a self-driving car is to automatically detect lane lines using an algorithm.
+![Detected lane lines](examples/laneLines_thirdPass.jpg)
 
-In this project you will detect lane lines in images using Python and OpenCV.  OpenCV means "Open-Source Computer Vision", which is a package that has many useful tools for analyzing images.  
+This repository began as the first project in Udacity's Self-Driving Car Engineer Nanodegree and has since been modernized into a typed, tested Python package with a command-line interface.
 
-To complete the project, two files will be submitted: a file containing project code and a file containing a brief write up explaining your solution. We have included template files to be used both for the [code](https://github.com/udacity/CarND-LaneLines-P1/blob/master/P1.ipynb) and the [writeup](https://github.com/udacity/CarND-LaneLines-P1/blob/master/writeup_template.md).The code file is called P1.ipynb and the writeup template is writeup_template.md 
+## Features
 
-To meet specifications in the project, take a look at the requirements in the [project rubric](https://review.udacity.com/#!/rubrics/322/view)
+- Detects left and right lane boundaries in RGB road images.
+- Processes individual images and complete MP4 videos.
+- Smooths lane estimates across video frames.
+- Supports validated TOML configuration.
+- Refuses accidental output overwrites unless explicitly allowed.
+- Uses a reproducible Python 3.12 environment and lockfile.
+- Includes unit tests, strict type checking, linting, formatting checks, package builds, and continuous integration.
 
+## Detection pipeline
 
-Creating a Great Writeup
----
-For this project, a great writeup should provide a detailed response to the "Reflection" section of the [project rubric](https://review.udacity.com/#!/rubrics/322/view). There are three parts to the reflection:
+Each frame passes through the following stages:
 
-1. Describe the pipeline
+1. Convert the RGB image to grayscale.
+2. Apply Gaussian smoothing to reduce image noise.
+3. Detect edges with the Canny algorithm.
+4. Restrict detection to a configurable road region of interest.
+5. Find candidate line segments with the probabilistic Hough transform.
+6. Filter segments by slope and horizontal position.
+7. Fit a length-weighted line to each side of the lane.
+8. Smooth lane positions across recent video frames.
+9. Draw the detected lanes over the original frame.
 
-2. Identify any shortcomings
+## Requirements
 
-3. Suggest possible improvements
+- Python 3.12 or newer
+- [`uv`](https://docs.astral.sh/uv/)
+- Git
 
-We encourage using images in your writeup to demonstrate how your pipeline works.  
+Python and all project dependencies are resolved from `.python-version`, `pyproject.toml`, and `uv.lock`.
 
-All that said, please be concise!  We're not looking for you to write a book here: just a brief description.
+## Installation
 
-You're not required to use markdown for your writeup.  If you use another method please just submit a pdf of your writeup. Here is a link to a [writeup template file](https://github.com/udacity/CarND-LaneLines-P1/blob/master/writeup_template.md). 
+Clone the repository and enter its directory:
 
+```console
+git clone https://github.com/FelipeZerokun/SDCE-01-Finding-Lane-Lines-Python.git
+cd SDCE-01-Finding-Lane-Lines-Python
+```
 
-The Project
----
+Install the requested Python version and synchronize the development environment:
 
-## If you have already installed the [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) you should be good to go!   If not, you should install the starter kit to get started on this project. ##
+```console
+uv python install
+uv sync --dev
+```
 
-**Step 1:** Set up the [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) if you haven't already.
+`uv` creates and manages a local `.venv` automatically. Commands can be run with `uv run`, so activating the virtual environment is optional.
 
-**Step 2:** Open the code in a Jupyter Notebook
+To include JupyterLab and Matplotlib for the historical notebook:
 
-You will complete the project code in a Jupyter notebook.  If you are unfamiliar with Jupyter Notebooks, check out [Udacity's free course on Anaconda and Jupyter Notebooks](https://classroom.udacity.com/courses/ud1111) to get started.
+```console
+uv sync --all-groups
+```
 
-Jupyter is an Ipython notebook where you can run blocks of code and see results interactively.  All the code for this project is contained in a Jupyter notebook. To start Jupyter in your browser, use terminal to navigate to your project directory and then run the following command at the terminal prompt (be sure you've activated your Python 3 carnd-term1 environment as described in the [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) installation instructions!):
+## Usage
 
-`> jupyter notebook`
+### Process an image
 
-A browser window will appear showing the contents of the current directory.  Click on the file called "P1.ipynb".  Another browser window will appear displaying the notebook.  Follow the instructions in the notebook to complete the project.  
+```console
+uv run lane-finding image test_images/solidWhiteCurve.jpg \
+  --output outputs/solidWhiteCurve.png
+```
 
-**Step 3:** Complete the project and submit both the Ipython notebook and the project writeup
+### Process a video
 
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
+```console
+uv run lane-finding video test_videos/solidWhiteRight.mp4 \
+  --output outputs/solidWhiteRight.mp4
+```
 
+The output directory is created when necessary. Existing output files are protected by default; pass `--force` to replace one:
+
+```console
+uv run lane-finding image test_images/solidWhiteCurve.jpg \
+  --output outputs/solidWhiteCurve.png \
+  --force
+```
+
+Use `--help` to see all available commands and arguments:
+
+```console
+uv run lane-finding --help
+uv run lane-finding image --help
+uv run lane-finding video --help
+```
+
+On PowerShell, replace the trailing `\` characters in multiline examples with backticks, or enter each command on a single line.
+
+## Configuration
+
+The CLI uses a packaged default configuration, so it works independently of the current working directory. To customize the pipeline, copy or edit `configs/default.toml` and pass it explicitly:
+
+```console
+uv run lane-finding image test_images/solidYellowLeft.jpg \
+  --output outputs/solidYellowLeft.png \
+  --config configs/default.toml
+```
+
+Configuration is grouped by processing stage:
+
+| Section | Purpose |
+| --- | --- |
+| `blur` | Gaussian kernel size |
+| `canny` | Low and high edge-detection thresholds |
+| `roi` | Relative coordinates for the road region of interest |
+| `hough` | Hough-transform resolution and segment thresholds |
+| `lanes` | Slope filtering, line extent, and temporal smoothing |
+| `render` | Overlay weights and lane-line thickness |
+
+Invalid values, missing sections, and malformed TOML are reported as command-line errors. The editable configuration and packaged default are tested to ensure that they remain identical.
+
+## Development
+
+Install every dependency group:
+
+```console
+uv sync --all-groups
+```
+
+Run the complete quality suite:
+
+```console
+uv run ruff format --check src tests
+uv run ruff check src tests
+uv run mypy src/lane_finding
+uv run pytest
+uv build
+```
+
+To apply formatting rather than check it:
+
+```console
+uv run ruff format src tests
+```
+
+Formatting is deliberately limited to `src` and `tests` so the archived submission and notebook remain unchanged.
+
+GitHub Actions runs the same formatting, linting, typing, testing, and package-build checks on every push and pull request.
+
+## Project structure
+
+```text
+configs/                    Editable pipeline configuration
+legacy/                     Archived standalone implementation
+src/lane_finding/           Modern application package
+tests/                      Automated test suite
+test_images/                Supplied image fixtures and historical results
+test_videos/                Supplied video fixtures
+.github/workflows/ci.yml    Continuous-integration workflow
+P1.ipynb                    Original Udacity notebook
+pyproject.toml              Metadata, dependencies, and tool configuration
+uv.lock                     Reproducible dependency lockfile
+```
+
+## Limitations
+
+This classical computer-vision pipeline assumes relatively clear, approximately straight lane markings within a predictable camera view. Performance may degrade with:
+
+- Curved or heavily worn lane markings
+- Strong shadows, glare, fog, rain, or low light
+- Construction zones or unusual road markings
+- Abrupt camera-position changes
+- Vehicles or other objects obscuring the lane boundaries
+
+The detector is intended as an educational demonstration, not as a production vehicle-control system.
+
+## Legacy project
+
+The original Udacity implementation remains available in [`P1.ipynb`](P1.ipynb), with its exported standalone script preserved under [`legacy/Project01_RojasFelipe.py`](legacy/Project01_RojasFelipe.py). These files are retained for historical comparison and are not used by the modern CLI.
+
+## License
+
+This project is distributed under the terms of the [MIT License](LICENSE).
