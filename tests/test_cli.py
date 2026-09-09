@@ -12,12 +12,14 @@ CONFIG_PATH = PROJECT_ROOT / "configs" / "default.toml"
 
 def test_image_command_creates_output(
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     source = np.zeros((100, 200, 3), dtype=np.uint8)
     input_path = tmp_path / "input.png"
     output_path = tmp_path / "output.png"
     save_image(input_path, source)
+    monkeypatch.chdir(tmp_path)
 
     exit_code = main(
         [
@@ -25,8 +27,6 @@ def test_image_command_creates_output(
             str(input_path),
             "--output",
             str(output_path),
-            "--config",
-            str(CONFIG_PATH),
         ]
     )
 

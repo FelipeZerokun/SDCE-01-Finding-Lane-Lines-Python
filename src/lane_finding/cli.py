@@ -9,8 +9,6 @@ from lane_finding.detector import LaneDetector
 from lane_finding.image_io import load_image, save_image
 from lane_finding.video import process_video
 
-DEFAULT_CONFIG_PATH = Path("configs/default.toml")
-
 
 def _add_processing_arguments(
     command_parser: argparse.ArgumentParser,
@@ -30,8 +28,8 @@ def _add_processing_arguments(
     command_parser.add_argument(
         "--config",
         type=Path,
-        default=DEFAULT_CONFIG_PATH,
-        help=f"Configuration file (default: {DEFAULT_CONFIG_PATH}).",
+        default=None,
+        help="Optional configuration file; otherwise use the packaged default.",
     )
     command_parser.add_argument(
         "--force",

@@ -33,3 +33,15 @@ def test_rejects_even_blur_kernel(tmp_path: Path) -> None:
 def test_reports_missing_configuration() -> None:
     with pytest.raises(ConfigError, match="Configuration file not found"):
         load_config("does-not-exist.toml")
+
+
+def test_loads_packaged_default_configuration() -> None:
+    config = load_config()
+
+    assert config.blur.kernel_size == 7
+    assert config.canny.low_threshold == 50
+    assert config.lanes.smoothing_frames == 8
+
+
+def test_packaged_default_matches_editable_example() -> None:
+    assert load_config() == load_config(DEFAULT_CONFIG)

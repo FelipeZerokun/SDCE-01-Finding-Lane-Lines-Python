@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import tomllib
 from dataclasses import dataclass
+from importlib.resources import files
 from pathlib import Path
 from typing import Any
 
@@ -100,14 +101,8 @@ class LanesConfig:
     def __post_init__(self) -> None:
         _require_between("lanes.top_y", self.top_y, 0.0, 1.0)
 
-        if not (
-            0
-            < self.minimum_absolute_slope
-            < self.maximum_absolute_slope
-        ):
-            raise ConfigError(
-                "Lane slopes must satisfy 0 < minimum < maximum"
-            )
+        if not (0 < self.minimum_absolute_slope < self.maximum_absolute_slope):
+            raise ConfigError("Lane slopes must satisfy 0 < minimum < maximum")
 
         if self.smoothing_frames <= 0:
             raise ConfigError("lanes.smoothing_frames must be positive")
@@ -145,13 +140,11 @@ def _section(data: dict[str, Any], name: str) -> dict[str, Any]:
     return value
 
 
-def load_config(path: str | Path) -> LaneFindingConfig:
-    config_path = Path(path)
-
+def _create_config(
+    data: dict[str, Any],
+    source: str,
+) -> LaneFindingConfig:
     try:
-        with config_path.open("rb") as file:
-            data = tomllib.load(file)
-
         return LaneFindingConfig(
             blur=BlurConfig(**_section(data, "blur")),
             canny=CannyConfig(**_section(data, "canny")),
@@ -162,9 +155,37 @@ def load_config(path: str | Path) -> LaneFindingConfig:
         )
     except ConfigError:
         raise
+    except (KeyError, TypeError) as error:
+        raise ConfigError(f"Invalid configuration in {source}: {error}") from error
+
+
+def load_config(
+    path: str | Path | None = None,
+) -> LaneFindingConfig:
+    """Load an external configuration or the packaged default."""
+    if path is None:
+        resource = files("lane_finding").joinpath("default.toml")
+
+        try:
+            with resource.open("rb") as file:
+                data = tomllib.load(file)
+        except FileNotFoundError:
+            raise ConfigError("Packaged default configuration is missing") from None
+        except tomllib.TOMLDecodeError as error:
+            raise ConfigError(
+                f"Invalid packaged default configuration: {error}"
+            ) from error
+
+        return _create_config(data, "packaged default configuration")
+
+    config_path = Path(path)
+
+    try:
+        with config_path.open("rb") as file:
+            data = tomllib.load(file)
     except FileNotFoundError:
         raise ConfigError(f"Configuration file not found: {config_path}") from None
-    except (KeyError, TypeError, tomllib.TOMLDecodeError) as error:
-        raise ConfigError(
-            f"Invalid configuration in {config_path}: {error}"
-        ) from error
+    except tomllib.TOMLDecodeError as error:
+        raise ConfigError(f"Invalid configuration in {config_path}: {error}") from error
+
+    return _create_config(data, str(config_path))
