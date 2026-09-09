@@ -1,0 +1,64 @@
+[project]
+name = "lane-finding"
+version = "0.1.0"
+description = "A configurable OpenCV pipeline for detecting road lane lines in images and videos."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Felipe Rojas", email = "epilefrojasleon@gmail.com" }
+]
+keywords = [
+    "computer-vision",
+    "lane-detection",
+    "opencv",
+    "self-driving-car",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Education",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Image Processing",
+]
+dependencies = [
+    "moviepy>=2.2.1",
+    "numpy>=2.5.3",
+    "opencv-python-headless>=5.0.0.93",
+]
+
+[project.urls]
+Homepage = "https://github.com/FelipeZerokun/SDCE-01-Finding-Lane-Lines-Python"
+Repository = "https://github.com/FelipeZerokun/SDCE-01-Finding-Lane-Lines-Python"
+Issues = "https://github.com/FelipeZerokun/SDCE-01-Finding-Lane-Lines-Python/issues"
+
+[project.scripts]
+lane-finding = "lane_finding.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.12.0,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["lane_finding"]
+
+[[tool.mypy.overrides]]
+module = ["moviepy", "moviepy.*"]
+ignore_missing_imports = true
+
+[dependency-groups]
+dev = [
+    "mypy>=2.3.1",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.16.6",
+]
+notebook = [
+    "jupyterlab>=4.6.3",
+    "matplotlib>=3.11.1",
+]

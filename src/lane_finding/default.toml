@@ -1,0 +1,32 @@
+[blur]
+kernel_size = 7
+
+[canny]
+low_threshold = 50
+high_threshold = 150
+
+[roi]
+bottom_left_x = 0.05
+top_left_x = 0.45
+top_right_x = 0.55
+bottom_right_x = 0.99
+top_y = 0.60
+bottom_y = 0.92
+
+[hough]
+rho = 1.0
+theta_degrees = 1.0
+threshold = 20
+min_line_length = 35
+max_line_gap = 5
+
+[lanes]
+top_y = 0.63
+minimum_absolute_slope = 0.35
+maximum_absolute_slope = 2.5
+smoothing_frames = 8
+
+[render]
+alpha = 0.8
+line_weight = 1.0
+line_thickness = 12
