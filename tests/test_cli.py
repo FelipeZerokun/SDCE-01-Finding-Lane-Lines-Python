@@ -80,3 +80,53 @@ def test_image_command_reports_missing_input(
 
     assert error.value.code == 2
     assert not output_path.exists()
+
+
+def test_video_command_calls_video_processor(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    source = tmp_path / "input.mp4"
+    destination = tmp_path / "output.mp4"
+    source.write_bytes(b"source")
+
+    called = False
+
+    def fake_process_video(
+        input_path: str | Path,
+        output_path: str | Path,
+        _config: object,
+        *,
+        overwrite: bool = False,
+    ) -> None:
+        nonlocal called
+        called = True
+
+        assert Path(input_path) == source
+        assert Path(output_path) == destination
+        assert overwrite is True
+
+        destination.write_bytes(b"processed")
+
+    monkeypatch.setattr(
+        "lane_finding.cli.process_video",
+        fake_process_video,
+    )
+
+    exit_code = main(
+        [
+            "video",
+            str(source),
+            "--output",
+            str(destination),
+            "--config",
+            str(CONFIG_PATH),
+            "--force",
+        ]
+    )
+
+    assert exit_code == 0
+    assert called
+    assert destination.read_bytes() == b"processed"
+    assert "Wrote processed video" in capsys.readouterr().out

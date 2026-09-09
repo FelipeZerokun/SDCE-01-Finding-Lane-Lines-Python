@@ -7,8 +7,37 @@ from pathlib import Path
 from lane_finding.config import ConfigError, load_config
 from lane_finding.detector import LaneDetector
 from lane_finding.image_io import load_image, save_image
+from lane_finding.video import process_video
 
 DEFAULT_CONFIG_PATH = Path("configs/default.toml")
+
+
+def _add_processing_arguments(
+    command_parser: argparse.ArgumentParser,
+) -> None:
+    command_parser.add_argument(
+        "input",
+        type=Path,
+        help="Path to the source file.",
+    )
+    command_parser.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        required=True,
+        help="Path for the processed file.",
+    )
+    command_parser.add_argument(
+        "--config",
+        type=Path,
+        default=DEFAULT_CONFIG_PATH,
+        help=f"Configuration file (default: {DEFAULT_CONFIG_PATH}).",
+    )
+    command_parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Overwrite an existing output file.",
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -26,29 +55,13 @@ def build_parser() -> argparse.ArgumentParser:
         "image",
         help="Detect lane lines in one image.",
     )
-    image_parser.add_argument(
-        "input",
-        type=Path,
-        help="Path to the source image.",
+    _add_processing_arguments(image_parser)
+
+    video_parser = commands.add_parser(
+        "video",
+        help="Detect lane lines in an MP4 video.",
     )
-    image_parser.add_argument(
-        "-o",
-        "--output",
-        type=Path,
-        required=True,
-        help="Path for the processed image.",
-    )
-    image_parser.add_argument(
-        "--config",
-        type=Path,
-        default=DEFAULT_CONFIG_PATH,
-        help=f"Configuration file (default: {DEFAULT_CONFIG_PATH}).",
-    )
-    image_parser.add_argument(
-        "--force",
-        action="store_true",
-        help="Overwrite an existing output file.",
-    )
+    _add_processing_arguments(video_parser)
 
     return parser
 
@@ -69,6 +82,19 @@ def _run_image(args: argparse.Namespace) -> None:
     print(f"Wrote processed image to {args.output}")
 
 
+def _run_video(args: argparse.Namespace) -> None:
+    config = load_config(args.config)
+
+    process_video(
+        args.input,
+        args.output,
+        config,
+        overwrite=args.force,
+    )
+
+    print(f"Wrote processed video to {args.output}")
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -76,6 +102,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         if args.command == "image":
             _run_image(args)
+        elif args.command == "video":
+            _run_video(args)
         else:
             parser.error(f"Unknown command: {args.command}")
     except (
