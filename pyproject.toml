@@ -1,16 +1,40 @@
 [project]
 name = "lane-finding"
 version = "0.1.0"
-description = "Add your description here"
+description = "A configurable OpenCV pipeline for detecting road lane lines in images and videos."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
     { name = "Felipe Rojas", email = "epilefrojasleon@gmail.com" }
 ]
-requires-python = ">=3.12"
+keywords = [
+    "computer-vision",
+    "lane-detection",
+    "opencv",
+    "self-driving-car",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Image Processing",
+]
 dependencies = [
     "moviepy>=2.2.1",
     "numpy>=2.5.3",
     "opencv-python-headless>=5.0.0.93",
 ]
+
+[project.urls]
+Homepage = "https://github.com/FelipeZerokun/SDCE-01-Finding-Lane-Lines-Python"
+Repository = "https://github.com/FelipeZerokun/SDCE-01-Finding-Lane-Lines-Python"
+Issues = "https://github.com/FelipeZerokun/SDCE-01-Finding-Lane-Lines-Python/issues"
 
 [project.scripts]
 lane-finding = "lane_finding.cli:main"
