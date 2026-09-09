@@ -1,2 +1,1 @@
-def main() -> None:
-    print("Hello from lane-finding!")
+"""Lane-line detection using Python and OpenCV."""

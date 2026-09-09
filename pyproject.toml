@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-lane-finding = "lane_finding:main"
+lane-finding = "lane_finding.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.12.0,<0.13.0"]
